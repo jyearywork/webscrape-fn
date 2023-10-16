@@ -26,8 +26,8 @@ class ApartmentsParser(ApartmentsScraper):
             return
 
         # if still here, should be good to read the file
-        outfile_name =  + self.input_file[0:self.input_file.rfind(".")] + "_output.csv"
-        outfile = open(f'./data/{outfile_name}', 'w', newline='', encoding='utf-8')
+        outfile_name =  f"./data/{self.input_file[0:self.input_file.rfind('.')]}_output.csv"
+        outfile = open(f'{outfile_name}', 'w', newline='', encoding='utf-8')
         writer = csv.writer(outfile, delimiter=",", quoting=csv.QUOTE_MINIMAL)
 
         # read inputs, fetch data and parse
