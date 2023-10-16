@@ -8,8 +8,8 @@ import sqlite3
 from datetime import datetime
 
 # INPUTS
-INPUT_FILE = "data/apt_comps.csv"
-DATABASE_NAME = "data/ApartmentscomDatabase.db"
+INPUT_FILE = "./data/apt_comps.csv"
+DATABASE_NAME = "./data/ApartmentscomDatabase.db"
 BATCH_SIZE = 1 # how many parallel requests
 # END OF INPUTS
 

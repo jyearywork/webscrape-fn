@@ -30,9 +30,9 @@ def write_data(myTimer: func.TimerRequest,
         logging.info('The timer is past due!')
     logging.info('Python timer trigger function executed.')
 
-    ApartmentsParser(inputblob, "data/ApartmentscomDatabase.db", 1, mode='write')
+    ApartmentsParser(inputblob, "./data/ApartmentscomDatabase.db", 1, mode='write')
     outputblob.set('apt_comps_output.csv')
-    df=pd.read_csv('data/apt_comps_output.csv')
+    df=pd.read_csv('./data/apt_comps_output.csv')
 
     split_col =  df['Number of Units and Stories'] 
 
