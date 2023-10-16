@@ -3,7 +3,7 @@ import azure.functions as func
 from datetime import datetime
 import pandas as pd
 from azure.functions.decorators.core import DataType
-from localfiles.apartments_write_data_2 import ApartmentsParser
+from apartments_write_data_2 import ApartmentsParser
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 write_date = datetime.now().strftime("%d-%B-%Y")
