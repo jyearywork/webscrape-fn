@@ -1,18 +1,13 @@
 import logging
-import json
 import azure.functions as func
 from datetime import datetime
 import pandas as pd
 from azure.functions.decorators.core import DataType
-from azure.storage.blob import BlobType
-from apartments_scrape_1 import ApartmentsScraper
-from apartments_write_data_2 import ApartmentsParser
+from localfiles.apartments_write_data_2 import ApartmentsParser
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 write_date = datetime.now().strftime("%d-%B-%Y")
-#datetime.now().strftime()
 
-#storage binding
 @app.function_name(name="ApartmentsComScraper")
 @app.schedule(schedule="0 0 0 * * *", arg_name="myTimer",
               run_on_startup=True, use_monitor=False)
@@ -35,9 +30,9 @@ def write_data(myTimer: func.TimerRequest,
         logging.info('The timer is past due!')
     logging.info('Python timer trigger function executed.')
 
-    ApartmentsParser(inputblob, "ApartmentscomDatabase.db", 1, mode='write')
+    ApartmentsParser(inputblob, "data/ApartmentscomDatabase.db", 1, mode='write')
     outputblob.set('apt_comps_output.csv')
-    df=pd.read_csv('apt_comps_output.csv')
+    df=pd.read_csv('data/apt_comps_output.csv')
 
     split_col =  df['Number of Units and Stories'] 
 

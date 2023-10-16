@@ -4,19 +4,11 @@ from apartments_scrape_1 import BATCH_SIZE
 from apartments_scrape_1 import ApartmentsScraper
 
 
-# install: requests, lxml
-import requests
+
 from lxml import html
 import os
-import sys
 import csv
-import threading
 import bz2
-import sqlite3
-import pprint
-import time
-from datetime import datetime
-from urllib.parse import urljoin
 
 
 class ApartmentsParser(ApartmentsScraper):
@@ -35,7 +27,7 @@ class ApartmentsParser(ApartmentsScraper):
 
         # if still here, should be good to read the file
         outfile_name = self.input_file[0:self.input_file.rfind(".")] + "_output.csv"
-        outfile = open(outfile_name, 'w', newline='', encoding='utf-8')
+        outfile = open(f'data/{outfile_name}', 'w', newline='', encoding='utf-8')
         writer = csv.writer(outfile, delimiter=",", quoting=csv.QUOTE_MINIMAL)
 
         # read inputs, fetch data and parse

@@ -6,7 +6,6 @@ import threading
 import bz2
 import sqlite3
 from datetime import datetime
-from urllib import parse
 
 # INPUTS
 INPUT_FILE = "apt_comps.csv"
