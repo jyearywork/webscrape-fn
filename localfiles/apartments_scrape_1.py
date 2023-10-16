@@ -15,7 +15,7 @@ BATCH_SIZE = 1 # how many parallel requests
 
 
 class ApartmentsScraper:
-    def __init__(self, input_filename, input_databasename, input_batchsize, mode='scrape'):
+    def __init__(self, input_filename, input_databasename, input_batchsize, mode='scrape'):  # noqa: E501
         ## check if inputs are good
         self.inputs_are_good = True
         self.is_interrupted = False
@@ -37,7 +37,7 @@ class ApartmentsScraper:
         ## create database
         self.db_conn = sqlite3.connect(self.database_name, check_same_thread=False)
         self.db_cursor = self.db_conn.cursor()
-        self.db_cursor.execute("CREATE TABLE IF NOT EXISTS DataTable (link TEXT NOT NULL PRIMARY KEY, html BLOB, time_of_scraping TEXT, timestamp REAL)")
+        self.db_cursor.execute("CREATE TABLE IF NOT EXISTS DataTable (link TEXT NOT NULL PRIMARY KEY, html BLOB, time_of_scraping TEXT, timestamp REAL)")  # noqa: E501
 
         ## set items for threading
         self.good_count = 0
@@ -61,13 +61,13 @@ class ApartmentsScraper:
             link_index = None
             
             for line in reader:
-                if is_header_row == True:
+                if is_header_row == True:  # noqa: E712
                     if header_to_look_for in line:
                         link_index = line.index(header_to_look_for)
                     is_header_row = False
                     continue
 
-                if link_index == None:
+                if link_index == None:  # noqa: E711
                     print("Can't find header in csv:", header_to_look_for)
                     break
 
@@ -79,8 +79,8 @@ class ApartmentsScraper:
                         
             
             return items_to_return
-        except:
-            print("An exception while reading inputs - make sure input filename is correct!")
+        except:  # noqa: E722
+            print("An exception while reading inputs - make sure input filename is correct!")  # noqa: E501
             return []
 
 
@@ -94,7 +94,7 @@ class ApartmentsScraper:
         all_thread_items = {}
         
         for item_to_scrape in self.items_to_scrape:
-            existence_check = self.db_cursor.execute("SELECT EXISTS(SELECT 1 FROM DataTable WHERE link=?)", (item_to_scrape["link"], )).fetchone()[0]
+            existence_check = self.db_cursor.execute("SELECT EXISTS(SELECT 1 FROM DataTable WHERE link=?)", (item_to_scrape["link"], )).fetchone()[0]  # noqa: E501
             if existence_check == 1:
                 continue # already scraped
 
@@ -107,14 +107,14 @@ class ApartmentsScraper:
                 ## call it
                 all_threads = []
                 for a_thread_item in all_thread_items:
-                    current_thread = threading.Thread(target=self.apartment_thread, args=(all_thread_items[a_thread_item],) )
+                    current_thread = threading.Thread(target=self.apartment_thread, args=(all_thread_items[a_thread_item],) )  # noqa: E501
                     all_threads.append(current_thread)
                     current_thread.start()
 
                 for thr in all_threads:
                     thr.join()
 
-                print("Current item", self.items_to_scrape.index(item_to_scrape)+1, "/", len(self.items_to_scrape), "Good requests in this batch:", self.good_count, "/", len(all_thread_items))
+                print("Current item", self.items_to_scrape.index(item_to_scrape)+1, "/", len(self.items_to_scrape), "Good requests in this batch:", self.good_count, "/", len(all_thread_items))  # noqa: E501
                 self.good_count = 0
                 all_thread_items = {}
 
@@ -123,14 +123,14 @@ class ApartmentsScraper:
             ## call for residuals
             all_threads = []
             for a_thread_item in all_thread_items:
-                current_thread = threading.Thread(target=self.apartment_thread, args=(all_thread_items[a_thread_item],) )
+                current_thread = threading.Thread(target=self.apartment_thread, args=(all_thread_items[a_thread_item],) )  # noqa: E501
                 all_threads.append(current_thread)
                 current_thread.start()
 
             for thr in all_threads:
                 thr.join()
 
-            print("Current item", self.items_to_scrape.index(item_to_scrape)+1, "/", len(self.items_to_scrape), "Good requests in this batch:", self.good_count, "/", len(all_thread_items))
+            print("Current item", self.items_to_scrape.index(item_to_scrape)+1, "/", len(self.items_to_scrape), "Good requests in this batch:", self.good_count, "/", len(all_thread_items))  # noqa: E501
             self.good_count = 0
             all_thread_items = {}
             
@@ -141,10 +141,10 @@ class ApartmentsScraper:
         good_to_save = False
         try:
             r = requests.get(input_dict["link"], timeout=20,
-                             headers={"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36"})
+                             headers={"user-agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36"})  # noqa: E501
             c = r.content
             tree = html.fromstring(c)
-            verificator_el = tree.xpath("//header[@id='profileHeaderWrapper']//h1[@id='propertyName']")
+            verificator_el = tree.xpath("//header[@id='profileHeaderWrapper']//h1[@id='propertyName']")  # noqa: E501
             if len(verificator_el) != 0:
                 good_to_save = True
         except:
@@ -155,8 +155,8 @@ class ApartmentsScraper:
             current_time_object = datetime.now()
             with self.LOCK:
                 try:
-                    self.db_cursor.execute("INSERT INTO DataTable (link, html, time_of_scraping, timestamp) VALUES(?,?,?,?)",
-                                           (input_dict["link"], bz2.compress(c), current_time_object.strftime("%d-%B-%Y"), current_time_object.timestamp() ))
+                    self.db_cursor.execute("INSERT INTO DataTable (link, html, time_of_scraping, timestamp) VALUES(?,?,?,?)",  # noqa: E501
+                                           (input_dict["link"], bz2.compress(c), current_time_object.strftime("%d-%B-%Y"), current_time_object.timestamp() ))  # noqa: E501
                     self.db_conn.commit()
                     self.good_count+=1
                 except:

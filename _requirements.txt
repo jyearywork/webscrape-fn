@@ -1,4 +1,4 @@
-# # requirements.txt
+# requirements.txt
 
 azure-core==1.29.4
 azure-functions==1.17.0
@@ -16,7 +16,7 @@ isodate==0.6.1
 lxml==4.9.3
 msal==1.24.1
 msal-extensions==1.0.0
-numpy==1.26.1
+numpy==1.26.0
 os0==2.0.1
 pandas==2.1.1
 portalocker==2.8.2
@@ -24,7 +24,6 @@ pycparser==2.21
 PyJWT==2.8.0
 python-dateutil==2.8.2
 pytz==2023.3.post1
-pywin32==306
 requests==2.31.0
 six==1.16.0
 typing_extensions==4.8.0
