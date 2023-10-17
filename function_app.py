@@ -9,8 +9,8 @@ app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 write_date = datetime.now().strftime("%d-%B-%Y")
 
 @app.function_name(name="ApartmentsComScraper")
-@app.schedule(schedule="0 0 0 * * *", arg_name="myTimer",
-              run_on_startup=True, use_monitor=False)
+@app.schedule(schedule="0 6 * * *", arg_name="myTimer",
+              run_on_startup=False, use_monitor=True)
 @app.blob_input(arg_name="inputblob",
                 path="webscrape/apt_comps.csv",
                 connection="AzureWebJobsStorage")
