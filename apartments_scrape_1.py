@@ -6,6 +6,7 @@ import threading
 import bz2
 import sqlite3
 from datetime import datetime
+import logging
 
 # INPUTS
 INPUT_FILE = "./data/apt_comps.csv"
@@ -25,7 +26,7 @@ class ApartmentsScraper:
                         self.check_input('BATCH_SIZE', 'positive_int', input_batchsize)
                         ]
         if False in input_checks:
-            print("Bad inputs, quit!")
+            logging.info("Bad inputs, quit!")
             self.inputs_are_good = False
             return
 
@@ -68,7 +69,7 @@ class ApartmentsScraper:
                     continue
 
                 if link_index == None:  # noqa: E711
-                    print("Can't find header in csv:", header_to_look_for)
+                    logging.info("Can't find header in csv:", header_to_look_for)
                     break
 
                 try:
@@ -80,7 +81,7 @@ class ApartmentsScraper:
             
             return items_to_return
         except:  # noqa: E722
-            print("An exception while reading inputs - make sure input filename is correct!")  # noqa: E501
+            logging.info("An exception while reading inputs - make sure input filename is correct!")  # noqa: E501
             return []
 
 
@@ -89,7 +90,7 @@ class ApartmentsScraper:
         if self.inputs_are_good == False or self.is_interrupted == True:
             return
 
-        print("Scraping unscraped items...")
+        logging.info("Scraping unscraped items...")
         self.good_count = 0
         all_thread_items = {}
         
@@ -114,7 +115,7 @@ class ApartmentsScraper:
                 for thr in all_threads:
                     thr.join()
 
-                print("Current item", self.items_to_scrape.index(item_to_scrape)+1, "/", len(self.items_to_scrape), "Good requests in this batch:", self.good_count, "/", len(all_thread_items))  # noqa: E501
+                logging.info("Current item", self.items_to_scrape.index(item_to_scrape)+1, "/", len(self.items_to_scrape), "Good requests in this batch:", self.good_count, "/", len(all_thread_items))  # noqa: E501
                 self.good_count = 0
                 all_thread_items = {}
 
@@ -130,7 +131,7 @@ class ApartmentsScraper:
             for thr in all_threads:
                 thr.join()
 
-            print("Current item", self.items_to_scrape.index(item_to_scrape)+1, "/", len(self.items_to_scrape), "Good requests in this batch:", self.good_count, "/", len(all_thread_items))  # noqa: E501
+            logging.info("Current item", self.items_to_scrape.index(item_to_scrape)+1, "/", len(self.items_to_scrape), "Good requests in this batch:", self.good_count, "/", len(all_thread_items))  # noqa: E501
             self.good_count = 0
             all_thread_items = {}
             
@@ -169,17 +170,17 @@ class ApartmentsScraper:
         if input_type == 'str':
             if type(input_value) != str:
                 input_is_good = False
-                print(input_name + " should be a string!")
+                logging.info(input_name + " should be a string!")
         elif input_type == 'positive_int':
             if type(input_value) != int:
                 input_is_good = False
-                print(input_name + " should be an integer!")
+                logging.info(input_name + " should be an integer!")
             else:
                 if input_value <= 0:
                     input_is_good = False
-                    print(input_name + " should be a positive integer!")
+                    logging.info(input_name + " should be a positive integer!")
         else:
-            print("Unhandled input type: " + input_type)
+            logging.info("Unhandled input type: " + input_type)
             
         return input_is_good
 

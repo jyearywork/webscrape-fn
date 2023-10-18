@@ -15,7 +15,7 @@ write_date = datetime.now().strftime("%d-%B-%Y")
                 path="webscrape/apt_comps.csv",
                 connection="AzureWebJobsStorage")
 @app.blob_output(arg_name="outputblob", 
-                 path=f"webscrape/{write_date}/{write_date}_output.csv", 
+                 path=f"webscrape/{write_date}/{datetime.now().strftime('%m-%d-%Y')}_output.csv", 
                  connection="AzureWebJobsStorage")
 @app.generic_output_binding(arg_name='writeToDB', type='sql',
                             CommandText="[dbo].[apt_comps]",
@@ -31,7 +31,7 @@ def write_data(myTimer: func.TimerRequest,
     logging.info('Python timer trigger function executed.')
 
     ApartmentsParser(inputblob, "./data/ApartmentscomDatabase.db", 1, mode='write')
-    outputblob.set('apt_comps_output.csv')
+    outputblob.set('./data/apt_comps_output.csv')
     df=pd.read_csv('./data/apt_comps_output.csv')
 
     split_col =  df['Number of Units and Stories'] 

@@ -4,7 +4,7 @@ from apartments_scrape_1 import BATCH_SIZE
 from apartments_scrape_1 import ApartmentsScraper
 
 
-
+import logging
 from lxml import html
 import os
 import csv
@@ -16,13 +16,13 @@ class ApartmentsParser(ApartmentsScraper):
         if self.inputs_are_good == False or self.is_interrupted == True:
             return
         
-        print("Writing data...")
+        logging.info("Writing data...")
         if not os.path.exists(self.input_file):
-            print("Input file doesn't exist!")
+            logging.info("Input file doesn't exist!")
             return
         
         if not self.input_file.lower().endswith(".csv"):
-            print("Input file isn't a csv file!")
+            logging.info("Input file isn't a csv file!")
             return
 
         # if still here, should be good to read the file
@@ -53,11 +53,11 @@ class ApartmentsParser(ApartmentsScraper):
 
                 # any data line is here!
                 if link_index == None:
-                    print("Can't find header in csv:", header_to_look_for)
+                    logging.info("Can't find header in csv:", header_to_look_for)
                     break
 
                 if len(line) != expected_line_length:
-                    print("Unexpected line length for a line in input file!")
+                    logging.info("Unexpected line length for a line in input file!")
                     total_parsed+=1
                     continue
 
@@ -79,7 +79,7 @@ class ApartmentsParser(ApartmentsScraper):
                     else:
                         # parse out and write!
                         parsed_data = self.parse_data(fetched_data[0], fetched_data[1], fetched_data[2])
-                        #pprint.pprint(parsed_data)
+                        logging.info(parsed_data)
                         if len(parsed_data) != 0:
                             for item_to_write in parsed_data:
                                 # write, now there are different types so some headers might be empty so need to iterate all headers
@@ -96,10 +96,10 @@ class ApartmentsParser(ApartmentsScraper):
 
                 total_parsed+=1
                 if total_parsed%10000 == 0:
-                    print("Total parsed so far:", total_parsed)
+                    logging.info("Total parsed so far:", total_parsed)
 
         outfile.close()
-        print("Created output file:", outfile_name)
+        logging.info("Created output file:", outfile_name)
         return
 
 
@@ -118,7 +118,7 @@ class ApartmentsParser(ApartmentsScraper):
                 if len(district_el) != 0:
                     mainadr_el[0].remove(district_el[0])
                 main_address = self.fix_string(mainadr_el[0].text_content())
-                #print([main_address])
+                logging.info([main_address])
 
             # get move-in special
             move_in_special = ""
@@ -149,7 +149,7 @@ class ApartmentsParser(ApartmentsScraper):
                     pass
              
             # get floor plans
-            #pprint.pprint(general_property_info)
+            logging.info(general_property_info)
             floorplan_els = tree.xpath("//div[@class='profileContent']/div/section[@id='availabilitySection']/div[@id='pricingView']/div[@data-tab-content-id='all']/div[contains(@class, 'pricingGridItem')]")
             for floorplan_el in floorplan_els:
                 # find floorplan info first
@@ -244,12 +244,12 @@ class ApartmentsParser(ApartmentsScraper):
                         this_unit["Unit"] = unit_number_el[0].text_content().strip()
 
                     # add if good
-                    #pprint.pprint(this_unit)
+                    logging.info(this_unit)
                     if this_unit["Unit"] != "" and this_unit["Price"] != "" and this_unit["Floor Plan"] != "" and this_unit["Bed"] != "" and this_unit["Bath"] != "":
                         data_to_return.append(this_unit)
                         total_units_added_under_this_floorplan+=1
                     else:
-                        print("Couldn't add a unit because some info is missing at", input_url)
+                        logging.info("Couldn't add a unit because some info is missing at", input_url)
 
                 # add the floorplan if no units added
                 if total_units_added_under_this_floorplan == 0:
@@ -257,7 +257,7 @@ class ApartmentsParser(ApartmentsScraper):
 
                 
         if len(data_to_return) == 0:
-            print("No units or floorplans found at", input_url)
+            logging.info("No units or floorplans found at", input_url)
         return data_to_return
 
 
