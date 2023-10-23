@@ -4,6 +4,7 @@ from datetime import datetime
 import pandas as pd
 from azure.functions.decorators.core import DataType
 from apartments_write_data_2 import ApartmentsParser
+import os
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 write_date = datetime.now().strftime("%d-%B-%Y")
@@ -12,10 +13,10 @@ write_date = datetime.now().strftime("%d-%B-%Y")
 @app.schedule(schedule="0 6 * * *", arg_name="myTimer",
               run_on_startup=False, use_monitor=True)
 @app.blob_input(arg_name="inputblob",
-                path="webscrape/apt_comps.csv",
+                path=os.path("webscrape/apt_comps.csv"),
                 connection="AzureWebJobsStorage")
 @app.blob_output(arg_name="outputblob", 
-                 path=f"webscrape/{write_date}/{datetime.now().strftime('%m-%d-%Y')}_output.csv", 
+                 path=os.path(f"webscrape/{write_date}/{datetime.now().strftime('%m-%d-%Y')}_output.csv"), 
                  connection="AzureWebJobsStorage")
 @app.generic_output_binding(arg_name='writeToDB', type='sql',
                             CommandText="[dbo].[apt_comps]",
@@ -30,9 +31,9 @@ def write_data(myTimer: func.TimerRequest,
         logging.info('The timer is past due!')
     logging.info('Python timer trigger function executed.')
 
-    ApartmentsParser(inputblob, "./data/ApartmentscomDatabase.db", 1, mode='write')
-    outputblob.set('./data/apt_comps_output.csv')
-    df=pd.read_csv('./data/apt_comps_output.csv')
+    ApartmentsParser(inputblob, os.path("./data/ApartmentscomDatabase.db"), 1, mode='write')
+    outputblob.set(os.path('./data/apt_comps_output.csv'))
+    df=pd.read_csv(os.path('./data/apt_comps_output.csv'))
 
     split_col =  df['Number of Units and Stories'] 
 

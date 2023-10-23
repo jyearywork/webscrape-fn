@@ -7,10 +7,11 @@ import bz2
 import sqlite3
 from datetime import datetime
 import logging
+import os
 
 # INPUTS
-INPUT_FILE = "./data/apt_comps.csv"
-DATABASE_NAME = "./data/ApartmentscomDatabase.db"
+INPUT_FILE = os.path("./data/apt_comps.csv")
+DATABASE_NAME = os.path("./data/ApartmentscomDatabase.db")
 BATCH_SIZE = 1 # how many parallel requests
 # END OF INPUTS
 
@@ -20,15 +21,6 @@ class ApartmentsScraper:
         ## check if inputs are good
         self.inputs_are_good = True
         self.is_interrupted = False
-
-        input_checks = [#self.check_input('INPUT_FILE', 'str', input_filename),
-                        self.check_input('DATABASE_NAME', 'str', input_databasename),
-                        self.check_input('BATCH_SIZE', 'positive_int', input_batchsize)
-                        ]
-        if False in input_checks:
-            logging.info("Bad inputs, quit!")
-            self.inputs_are_good = False
-            return
 
         ## if still here, set inputs
         self.input_file = input_filename
@@ -163,26 +155,6 @@ class ApartmentsScraper:
                 except:
                     pass
         return
-
-
-    def check_input(self, input_name, input_type, input_value):
-        input_is_good = True
-        if input_type == 'str':
-            if type(input_value) != str:
-                input_is_good = False
-                logging.info(input_name + " should be a string!")
-        elif input_type == 'positive_int':
-            if type(input_value) != int:
-                input_is_good = False
-                logging.info(input_name + " should be an integer!")
-            else:
-                if input_value <= 0:
-                    input_is_good = False
-                    logging.info(input_name + " should be a positive integer!")
-        else:
-            logging.info("Unhandled input type: " + input_type)
-            
-        return input_is_good
 
 
 if __name__ == '__main__':
