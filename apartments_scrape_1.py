@@ -7,10 +7,11 @@ import bz2
 import sqlite3
 from datetime import datetime
 import logging
+import os
 
 # INPUTS
-INPUT_FILE = "./data/apt_comps.csv"
-DATABASE_NAME = "./data/ApartmentscomDatabase.db"
+INPUT_FILE = os.getcwd() + "/data/apt_comps.csv"
+DATABASE_NAME = os.getcwd() + "/data/ApartmentscomDatabase.db"
 BATCH_SIZE = 1 # how many parallel requests
 # END OF INPUTS
 

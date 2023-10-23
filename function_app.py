@@ -4,6 +4,8 @@ from datetime import datetime
 import pandas as pd
 from azure.functions.decorators.core import DataType
 from apartments_write_data_2 import ApartmentsParser
+import os
+import csv
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 write_date = datetime.now().strftime("%d-%B-%Y")
@@ -30,9 +32,11 @@ def write_data(myTimer: func.TimerRequest,
         logging.info('The timer is past due!')
     logging.info('Python timer trigger function executed.')
 
-    ApartmentsParser(inputblob, "./data/ApartmentscomDatabase.db", 1, mode='write')
-    outputblob.set('./data/apt_comps_output.csv')
-    df=pd.read_csv('./data/apt_comps_output.csv')
+    ApartmentsParser(inputblob, os.getcwd() + "/data/ApartmentscomDatabase.db", 1, mode='write')
+    myblob = pd.read_csv(os.getcwd() + '/data/apt_comps_output.csv')
+    myblob = myblob.to_csv()
+    outputblob.set(myblob)
+    df=pd.read_csv(os.getcwd() + '/data/apt_comps_output.csv')
 
     split_col =  df['Number of Units and Stories'] 
 

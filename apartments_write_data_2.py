@@ -26,7 +26,7 @@ class ApartmentsParser(ApartmentsScraper):
             return
 
         # if still here, should be good to read the file
-        outfile_name =  f"./data/{self.input_file[0:self.input_file.rfind('.')]}_output.csv"
+        outfile_name =  os.getcwd() + f"/data/{self.input_file[0:self.input_file.rfind('.')]}_output.csv"
         outfile = open(f'{outfile_name}', 'w', newline='', encoding='utf-8')
         writer = csv.writer(outfile, delimiter=",", quoting=csv.QUOTE_MINIMAL)
 
@@ -210,7 +210,7 @@ class ApartmentsParser(ApartmentsScraper):
 
                             
                 # next, find each unit and get its data!
-                unit_els = floorplan_el.xpath("./div[contains(@class, 'unitGridContainer')]/div/ul/li[contains(@class, 'unitContainer')]")
+                unit_els = floorplan_el.xpath("/div[contains(@class, 'unitGridContainer')]/div/ul/li[contains(@class, 'unitContainer')]")
                 total_units_added_under_this_floorplan = 0
                 for unit_el in unit_els:
                     this_unit = {"Item Type":"Unit", "Floor Plan":this_floorplan["Floor Plan"], "Bed":this_floorplan["Bed"], "Bath":this_floorplan["Bath"],
