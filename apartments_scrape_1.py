@@ -8,28 +8,23 @@ import sqlite3
 from datetime import datetime
 import logging
 import os
+from azure.storage.blob import ContainerClient, BlobClient
+
+container = ContainerClient.from_container_url('https://apartmentsdotcomscraper.blob.core.windows.net/webscrape?sv=2021-10-04&st=2023-10-24T21%3A57%3A29Z&se=2023-10-25T21%3A57%3A29Z&sr=c&sp=racwdlf&sig=DImSoMW9awImblHSWux1t1KF%2BBkq7NCu0Q4IoWOBwEo%3D')
 
 # INPUTS
-INPUT_FILE = os.getcwd() + "/data/apt_comps.csv"
+INPUT_FILE = container.get_blob_client('apt_comps.csv').download_blob().readall()
 DATABASE_NAME = os.getcwd() + "/data/ApartmentscomDatabase.db"
 BATCH_SIZE = 1 # how many parallel requests
 # END OF INPUTS
 
 
 class ApartmentsScraper:
-    def __init__(self, input_filename, input_databasename, input_batchsize, mode='scrape'):  # noqa: E501
+    def __init__(self, input_filename: str, input_databasename: str, input_batchsize: int, mode='scrape'):  # noqa: E501
         ## check if inputs are good
         self.inputs_are_good = True
         self.is_interrupted = False
 
-        input_checks = [#self.check_input('INPUT_FILE', 'str', input_filename),
-                        self.check_input('DATABASE_NAME', 'str', input_databasename),
-                        self.check_input('BATCH_SIZE', 'positive_int', input_batchsize)
-                        ]
-        if False in input_checks:
-            logging.info("Bad inputs, quit!")
-            self.inputs_are_good = False
-            return
 
         ## if still here, set inputs
         self.input_file = input_filename
@@ -55,9 +50,8 @@ class ApartmentsScraper:
     def read_inputs(self, header_to_look_for='link'):
         try:
             items_to_return = []
-            #with open(self.input_file, 'r', encoding='utf-8') as f:
-            f = self.input_file
-            reader = csv.reader(f, delimiter=",")
+            f=self.input_file
+            reader = csv.reader(f.readlines(), delimiter=",", )
             
             is_header_row = True
             link_index = None
@@ -158,7 +152,7 @@ class ApartmentsScraper:
             with self.LOCK:
                 try:
                     self.db_cursor.execute("INSERT INTO DataTable (link, html, time_of_scraping, timestamp) VALUES(?,?,?,?)",  # noqa: E501
-                                           (input_dict["link"], bz2.compress(c), current_time_object.strftime("%d-%B-%Y"), current_time_object.timestamp() ))  # noqa: E501
+                                           (input_dict["link"], bz2.compress(c), current_time_object.strftime("%d-%B-%Y"), current_time_object.timestamp()))  # noqa: E501
                     self.db_conn.commit()
                     self.good_count+=1
                 except:

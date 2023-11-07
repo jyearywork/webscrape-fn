@@ -3,9 +3,9 @@ import azure.functions as func
 from datetime import datetime
 import pandas as pd
 from azure.functions.decorators.core import DataType
+from apartments_scrape_1 import ApartmentsScraper
 from apartments_write_data_2 import ApartmentsParser
 import os
-import csv
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 write_date = datetime.now().strftime("%d-%B-%Y")
@@ -15,28 +15,35 @@ write_date = datetime.now().strftime("%d-%B-%Y")
               run_on_startup=False, use_monitor=True)
 @app.blob_input(arg_name="inputblob",
                 path="webscrape/apt_comps.csv",
-                connection="AzureWebJobsStorage")
+                connection="AzureWebJobsStorage",
+                data_type=DataType.STRING)
 @app.blob_output(arg_name="outputblob", 
                  path=f"webscrape/{write_date}/{datetime.now().strftime('%m-%d-%Y')}_output.csv", 
-                 connection="AzureWebJobsStorage")
+                 connection="AzureWebJobsStorage",
+                 data_type=DataType.STRING)
 @app.generic_output_binding(arg_name='writeToDB', type='sql',
                             CommandText="[dbo].[apt_comps]",
                             ConnectionStringSetting='SqlConnectionString',
                             data_type=DataType.STRING)
 
-def write_data(myTimer: func.TimerRequest,
-               inputblob: func.InputStream,
+
+def write_data(myTimer: func.TimerRequest, inputblob: func.InputStream,
                outputblob: func.Out[str], writeToDB: func.Out[func.SqlRowList]):
+    
+    DATABASE_NAME = os.getcwd() + "/data/ApartmentscomDatabase.db"
     
     if myTimer.past_due:
         logging.info('The timer is past due!')
-    logging.info('Python timer trigger function executed.')
+    logging.info('Python timer trigger function executed.')    
+    
+    
+    ApartmentsScraper(inputblob, DATABASE_NAME, 1, mode='scrape').scrape()
+    pars=ApartmentsParser(inputblob, DATABASE_NAME, 1, mode='write')
+    pars.write_data()
+    f = outputblob.get()
 
-    ApartmentsParser(inputblob, os.getcwd() + "/data/ApartmentscomDatabase.db", 1, mode='write')
-    myblob = pd.read_csv(os.getcwd() + '/data/apt_comps_output.csv')
-    myblob = myblob.to_csv()
-    outputblob.set(myblob)
-    df=pd.read_csv(os.getcwd() + '/data/apt_comps_output.csv')
+    outputblob.set(f)
+    df=pd.read_csv()
 
     split_col =  df['Number of Units and Stories'] 
 

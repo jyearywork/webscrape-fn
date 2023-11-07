@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "DatabaseProjectwebscraper",
+			"path": "../../../Desktop/DatabaseProjectwebscraper"
+		}
+	],
+	"settings": {
+		"debug.internalConsoleOptions": "neverOpen",
+		"azureAutomation.directory.basePath": "c:\\Users\\jyeary"
+	}
+}

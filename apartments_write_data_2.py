@@ -6,7 +6,7 @@ from apartments_scrape_1 import ApartmentsScraper
 
 import logging
 from lxml import html
-import os
+from azure.storage.blob import BlobClient
 import csv
 import bz2
 
@@ -15,19 +15,18 @@ class ApartmentsParser(ApartmentsScraper):
     def write_data(self):
         if self.inputs_are_good == False or self.is_interrupted == True:
             return
-        
+      
         logging.info("Writing data...")
-        if not os.path.exists(self.input_file):
-            logging.info("Input file doesn't exist!")
-            return
-        
-        if not self.input_file.lower().endswith(".csv"):
+
+        fp=self.input_file
+
+        if not fp.name.lower().endswith(".csv"):
             logging.info("Input file isn't a csv file!")
             return
 
         # if still here, should be good to read the file
-        outfile_name =  os.getcwd() + f"/data/{self.input_file[0:self.input_file.rfind('.')]}_output.csv"
-        outfile = open(f'{outfile_name}', 'w', newline='', encoding='utf-8')
+        
+        outfile = open(fp.writelines(), 'w', newline='', encoding='utf-8')
         writer = csv.writer(outfile, delimiter=",", quoting=csv.QUOTE_MINIMAL)
 
         # read inputs, fetch data and parse
@@ -37,7 +36,7 @@ class ApartmentsParser(ApartmentsScraper):
         header_to_look_for = 'link'
         total_parsed = 0
         
-        with open(self.input_file, 'r', encoding='utf-8') as f:
+        with open(fp, 'r', encoding='utf-8') as f:
             reader = csv.reader(f, delimiter=",")
             is_header_row = True
             
@@ -97,10 +96,9 @@ class ApartmentsParser(ApartmentsScraper):
                 total_parsed+=1
                 if total_parsed%10000 == 0:
                     logging.info("Total parsed so far:", total_parsed)
-
-        outfile.close()
+        outfile_name = outfile.name
         logging.info("Created output file:", outfile_name)
-        return
+        return outfile.read()
 
 
     def parse_data(self, input_url, input_html, input_scrapetime):
