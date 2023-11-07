@@ -5,7 +5,6 @@ import pandas as pd
 from azure.functions.decorators.core import DataType
 from apartments_scrape_1 import ApartmentsScraper
 from apartments_write_data_2 import ApartmentsParser
-import os
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 write_date = datetime.now().strftime("%d-%B-%Y")
@@ -34,16 +33,11 @@ def write_data(myTimer: func.TimerRequest, inputblob: func.InputStream,
     
     if myTimer.past_due:
         logging.info('The timer is past due!')
-    logging.info('Python timer trigger function executed.')    
-    
-    
-    ApartmentsScraper(inputblob, DATABASE_NAME, 1, mode='scrape').scrape()
-    pars=ApartmentsParser(inputblob, DATABASE_NAME, 1, mode='write')
-    pars.write_data()
-    f = outputblob.get()
+    logging.info('Python timer trigger function executed.')
 
-    outputblob.set(f)
-    df=pd.read_csv()
+    ApartmentsParser(inputblob, "./data/ApartmentscomDatabase.db", 1, mode='write')
+    outputblob.set('./data/apt_comps_output.csv')
+    df=pd.read_csv('./data/apt_comps_output.csv')
 
     split_col =  df['Number of Units and Stories'] 
 

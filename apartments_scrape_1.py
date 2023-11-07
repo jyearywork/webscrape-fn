@@ -7,14 +7,10 @@ import bz2
 import sqlite3
 from datetime import datetime
 import logging
-import os
-from azure.storage.blob import ContainerClient, BlobClient
-
-container = ContainerClient.from_container_url('https://apartmentsdotcomscraper.blob.core.windows.net/webscrape?sv=2021-10-04&st=2023-10-24T21%3A57%3A29Z&se=2023-10-25T21%3A57%3A29Z&sr=c&sp=racwdlf&sig=DImSoMW9awImblHSWux1t1KF%2BBkq7NCu0Q4IoWOBwEo%3D')
 
 # INPUTS
-INPUT_FILE = container.get_blob_client('apt_comps.csv').download_blob().readall()
-DATABASE_NAME = os.getcwd() + "/data/ApartmentscomDatabase.db"
+INPUT_FILE = "./data/apt_comps.csv"
+DATABASE_NAME = "./data/ApartmentscomDatabase.db"
 BATCH_SIZE = 1 # how many parallel requests
 # END OF INPUTS
 
